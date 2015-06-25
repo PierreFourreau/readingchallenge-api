@@ -1,6 +1,7 @@
 <?php
 
 require 'Slim/Slim.php';
+require 'db.php';
 
 $app = new Slim();
 
@@ -104,15 +105,4 @@ function findByLibelle($query) {
 		echo '{"error":{"text":'. $e->getMessage() .'}}'; 
 	}
 }
-
-function getConnection() {
-	$dbhost="localhost";
-	$dbuser="root";
-	$dbpass="";
-	$dbname="test";*
-	$dbh = new PDO("mysql:host=$dbhost;dbname=$dbname", $dbuser, $dbpass);	
-	$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-	return $dbh;
-}
-
 ?>
