@@ -7,7 +7,7 @@ $app = new Slim();
 
 $app->get('/categories', 'getCategories');
 $app->get('/categories/:id',	'getCategorie');
-$app->get('/categories/search/:query', 'findByLibelle');
+$app->get('/categories/search/:query', 'findBylabel');
 $app->post('/categories', 'addCategorie');
 $app->put('/categories/:id', 'updateCategorie');
 $app->delete('/categories/:id',	'deleteCategorie');
@@ -45,11 +45,11 @@ function getCategorie($id) {
 function addCategorie() {
 	$request = Slim::getInstance()->request();
 	$categorie = json_decode($request->getBody());
-	$sql = "INSERT INTO reading_challenge_categorie(categorie_libelle) VALUES (:libelle)";
+	$sql = "INSERT INTO reading_challenge_categorie(categorie_label) VALUES (:label)";
 	try {
 		$db = getConnection();
 		$stmt = $db->prepare($sql);  
-		$stmt->bindParam("libelle", $categorie->libelle);
+		$stmt->bindParam("label", $categorie->label);
 		$stmt->execute();
 		$categorie->id = $db->lastInsertId();
 		$db = null;
@@ -63,11 +63,11 @@ function updateCategorie($id) {
 	$request = Slim::getInstance()->request();
 	$body = $request->getBody();
 	$categorie = json_decode($body);
-	$sql = "UPDATE reading_challenge_categorie SET categorie_libelle=:libelle WHERE categorie_id=:id";
+	$sql = "UPDATE reading_challenge_categorie SET categorie_label=:label WHERE categorie_id=:id";
 	try {
 		$db = getConnection();
 		$stmt = $db->prepare($sql);  
-		$stmt->bindParam("libelle", $categorie->libelle);
+		$stmt->bindParam("label", $categorie->label);
 		$stmt->bindParam("id", $id);
 		$stmt->execute();
 		$db = null;
@@ -90,8 +90,8 @@ function deleteCategorie($id) {
 	}
 }
 
-function findByLibelle($query) {
-	$sql = "SELECT * FROM reading_challenge_categorie WHERE UPPER(categorie_libelle) LIKE :query ORDER BY categorie_libelle";
+function findBylabel($query) {
+	$sql = "SELECT * FROM reading_challenge_categorie WHERE UPPER(categorie_label) LIKE :query ORDER BY categorie_label";
 	try {
 		$db = getConnection();
 		$stmt = $db->prepare($sql);
