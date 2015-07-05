@@ -21,7 +21,8 @@ function getCategories() {
 		$stmt = $db->query($sql);  
 		$categories = $stmt->fetchAll(PDO::FETCH_OBJ);
 		$db = null;
-		echo '{"categories": ' . json_encode($categories) . '}';
+		echo json_encode($categories);
+		exit;
 	} catch(PDOException $e) {
 		echo '{"error":{"text":'. $e->getMessage() .'}}'; 
 	}
@@ -37,6 +38,7 @@ function getCategorie($id) {
 		$categorie = $stmt->fetchObject();  
 		$db = null;
 		echo json_encode($categorie); 
+		exit;
 	} catch(PDOException $e) {
 		echo '{"error":{"text":'. $e->getMessage() .'}}'; 
 	}
@@ -53,7 +55,8 @@ function addCategorie() {
 		$stmt->execute();
 		$categorie->id = $db->lastInsertId();
 		$db = null;
-		echo json_encode($categorie); 
+		echo json_encode($categorie);
+		exit;
 	} catch(PDOException $e) {
 		echo '{"error":{"text":'. $e->getMessage() .'}}'; 
 	}
@@ -71,7 +74,8 @@ function updateCategorie($id) {
 		$stmt->bindParam("id", $id);
 		$stmt->execute();
 		$db = null;
-		echo json_encode($categorie); 
+		echo json_encode($categorie);
+		exit;
 	} catch(PDOException $e) {
 		echo '{"error":{"text":'. $e->getMessage() .'}}'; 
 	}
@@ -85,6 +89,7 @@ function deleteCategorie($id) {
 		$stmt->bindParam("id", $id);
 		$stmt->execute();
 		$db = null;
+		exit;
 	} catch(PDOException $e) {
 		echo '{"error":{"text":'. $e->getMessage() .'}}'; 
 	}
@@ -100,7 +105,8 @@ function findBylabel($query) {
 		$stmt->execute();
 		$categories = $stmt->fetchAll(PDO::FETCH_OBJ);
 		$db = null;
-		echo '{"categories": ' . json_encode($categories) . '}';
+		echo json_encode($categories);
+		exit;
 	} catch(PDOException $e) {
 		echo '{"error":{"text":'. $e->getMessage() .'}}'; 
 	}
