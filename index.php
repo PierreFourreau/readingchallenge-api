@@ -5,6 +5,7 @@ require 'db.php';
 
 $app = new Slim();
 
+//category
 $app->get('/categories', 'getCategories');
 $app->get('/categories/:id',	'getCategorie');
 $app->get('/categories/search/:query', 'findBylabel');
@@ -12,8 +13,19 @@ $app->post('/categories', 'addCategorie');
 $app->put('/categories/:id', 'updateCategorie');
 $app->delete('/categories/:id',	'deleteCategorie');
 
+//suggestion
+$app->get('/suggestions/:id', 'getSuggestionsByCategoryId');
+$app->get('/suggestions/:id',	'getSuggestionById');
+$app->get('/suggestions/search/:query', 'findSuggestionBylabel');
+$app->post('/suggestions', 'addSuggestion');
+$app->put('/suggestions/:id', 'updateSuggestion');
+$app->delete('/suggestions/:id',	'deleteSuggestion');
+
 $app->run();
 
+/**********************************************************************/
+/*********				category							  *********/
+/**********************************************************************/
 function getCategories() {
 	$sql = "select * FROM reading_challenge_categorie";
 	try {
@@ -106,6 +118,114 @@ function findBylabel($query) {
 		$categories = $stmt->fetchAll(PDO::FETCH_OBJ);
 		$db = null;
 		echo json_encode($categories);
+		exit;
+	} catch(PDOException $e) {
+		echo '{"error":{"text":'. $e->getMessage() .'}}'; 
+	}
+}
+
+
+
+
+
+/**********************************************************************/
+/*********				suggestion							  *********/
+/**********************************************************************/
+function getSuggestionById($id) {
+	$sql = "SELECT * FROM reading_challenge_suggestion WHERE suggestion_id=:id";
+	try {
+		$db = getConnection();
+		$stmt = $db->prepare($sql);  
+		$stmt->bindParam("id", $id);
+		$stmt->execute();
+		$suggestion = $stmt->fetchObject();  
+		$db = null;
+		echo json_encode($suggestion); 
+		exit;
+	} catch(PDOException $e) {
+		echo '{"error":{"text":'. $e->getMessage() .'}}'; 
+	}
+}
+
+function getSuggestionsByCategoryId($id) {
+	$sql = "SELECT * FROM reading_challenge_suggestion WHERE categorie_id=:id";
+	try {
+		$db = getConnection();
+		$stmt = $db->prepare($sql);  
+		$stmt->bindParam("id", $id);
+		$stmt->execute();
+		$suggestion = $stmt->fetchObject();  
+		$db = null;
+		echo json_encode($suggestion); 
+		exit;
+	} catch(PDOException $e) {
+		echo '{"error":{"text":'. $e->getMessage() .'}}'; 
+	}
+}
+
+function addSuggestion() {
+	$request = Slim::getInstance()->request();
+	$suggestion = json_decode($request->getBody());
+	$sql = "INSERT INTO reading_challenge_suggestion(suggestion_label, categorie_id) VALUES (:label, :id)";
+	try {
+		$db = getConnection();
+		$stmt = $db->prepare($sql);  
+		$stmt->bindParam("label", $suggestion->label);
+		$stmt->bindParam("id", $suggestion->id_category);
+		$stmt->execute();
+		$suggestion->id = $db->lastInsertId();
+		$db = null;
+		echo json_encode($suggestion);
+		exit;
+	} catch(PDOException $e) {
+		echo '{"error":{"text":'. $e->getMessage() .'}}'; 
+	}
+}
+
+function updateSuggestion($id) {
+	$request = Slim::getInstance()->request();
+	$body = $request->getBody();
+	$suggestion = json_decode($body);
+	$sql = "UPDATE reading_challenge_suggestion SET suggestion_label=:label WHERE suggestion_id=:id";
+	try {
+		$db = getConnection();
+		$stmt = $db->prepare($sql);  
+		$stmt->bindParam("label", $suggestion->label);
+		$stmt->bindParam("id", $id);
+		$stmt->execute();
+		$db = null;
+		echo json_encode($suggestion);
+		exit;
+	} catch(PDOException $e) {
+		echo '{"error":{"text":'. $e->getMessage() .'}}'; 
+	}
+}
+
+function deleteSuggestion($id) {
+	$sql = "DELETE FROM reading_challenge_suggestion WHERE suggestion_id=:id";
+	try {
+		$db = getConnection();
+		$stmt = $db->prepare($sql);  
+		$stmt->bindParam("id", $id);
+		$stmt->execute();
+		$db = null;
+		exit;
+	} catch(PDOException $e) {
+		echo '{"error":{"text":'. $e->getMessage() .'}}'; 
+	}
+}
+
+function findSuggestionBylabel($query) {
+	$sql = "SELECT * FROM reading_challenge_suggestion WHERE UPPER(suggestion_label) LIKE :query ORDER BY suggestion_label";
+	try {
+		$db = getConnection();
+		$stmt = $db->prepare($sql);
+		$query = "%".$query."%";  
+		$stmt->bindParam("query", $query);
+		$stmt->execute();
+		$suggestions = $stmt->fetchAll(PDO::FETCH_OBJ);
+		$db = null;
+		echo json_encode($suggestions);
 		exit;
 	} catch(PDOException $e) {
 		echo '{"error":{"text":'. $e->getMessage() .'}}'; 
