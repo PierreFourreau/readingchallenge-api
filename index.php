@@ -59,11 +59,14 @@ function getCategorie($id) {
 function addCategorie() {
 	$request = Slim::getInstance()->request();
 	$categorie = json_decode($request->getBody());
-	$sql = "INSERT INTO reading_challenge_categorie(categorie_label) VALUES (:label)";
+	$sql = "INSERT INTO reading_challenge_categorie(categorie_label, categorie_label_fr, categorie_description, categorie_description_fr) VALUES (:label, :label_fr, :description, :description_fr)";
 	try {
 		$db = getConnection();
 		$stmt = $db->prepare($sql);  
 		$stmt->bindParam("label", $categorie->label);
+		$stmt->bindParam("label_fr", $categorie->label_fr);
+		$stmt->bindParam("description", $categorie->description);
+		$stmt->bindParam("description_fr", $categorie->description_fr);
 		$stmt->execute();
 		$categorie->id = $db->lastInsertId();
 		$db = null;
@@ -78,11 +81,14 @@ function updateCategorie($id) {
 	$request = Slim::getInstance()->request();
 	$body = $request->getBody();
 	$categorie = json_decode($body);
-	$sql = "UPDATE reading_challenge_categorie SET categorie_label=:label WHERE categorie_id=:id";
+	$sql = "UPDATE reading_challenge_categorie SET categorie_label=:label, categorie_label_fr=:label_fr, categorie_description=:description, categorie_description_fr=:description_fr WHERE categorie_id=:id";
 	try {
 		$db = getConnection();
 		$stmt = $db->prepare($sql);  
 		$stmt->bindParam("label", $categorie->label);
+		$stmt->bindParam("label_fr", $categorie->label_fr);
+		$stmt->bindParam("description", $categorie->description);
+		$stmt->bindParam("description_fr", $categorie->description_fr);
 		$stmt->bindParam("id", $id);
 		$stmt->execute();
 		$db = null;
@@ -108,7 +114,7 @@ function deleteCategorie($id) {
 }
 
 function findBylabel($query) {
-	$sql = "SELECT * FROM reading_challenge_categorie WHERE UPPER(categorie_label) LIKE :query ORDER BY categorie_label";
+	$sql = "SELECT * FROM reading_challenge_categorie WHERE UPPER(categorie_label) LIKE :query OR UPPER(categorie_label_fr) LIKE :query ORDER BY categorie_label, categorie_label_fr";
 	try {
 		$db = getConnection();
 		$stmt = $db->prepare($sql);
