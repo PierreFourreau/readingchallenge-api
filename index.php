@@ -14,7 +14,7 @@ $app->put('/categories/:id', 'updateCategorie');
 $app->delete('/categories/:id',	'deleteCategorie');
 
 //suggestion
-$app->get('/suggestions/:id', 'getSuggestionsByCategoryId');
+$app->get('/suggestionsByCategory/:id', 'getSuggestionsByCategoryId');
 $app->get('/suggestions/:id',	'getSuggestionById');
 $app->get('/suggestions/search/:query', 'findSuggestionBylabel');
 $app->post('/suggestions', 'addSuggestion');
@@ -160,9 +160,9 @@ function getSuggestionsByCategoryId($id) {
 		$stmt = $db->prepare($sql);  
 		$stmt->bindParam("id", $id);
 		$stmt->execute();
-		$suggestion = $stmt->fetchObject();  
+		$suggestions = $stmt->fetchAll(PDO::FETCH_OBJ);
 		$db = null;
-		echo json_encode($suggestion); 
+		echo json_encode($suggestions); 
 		exit;
 	} catch(PDOException $e) {
 		echo '{"error":{"text":'. $e->getMessage() .'}}'; 
