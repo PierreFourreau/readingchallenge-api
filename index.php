@@ -27,53 +27,54 @@ $app->run();
 /*********				category							  *********/
 /**********************************************************************/
 function getCategories() {
-	$sql = "select * FROM reading_challenge_categorie";
+	$sql = "select * FROM categories";
 	try {
 		$db = getConnection();
-		$stmt = $db->query($sql);  
+		$stmt = $db->query($sql);
 		$categories = $stmt->fetchAll(PDO::FETCH_OBJ);
 		$db = null;
 		echo json_encode($categories);
 		exit;
 	} catch(PDOException $e) {
-		echo '{"error":{"text":'. $e->getMessage() .'}}'; 
+		echo '{"error":{"text":'. $e->getMessage() .'}}';
 	}
 }
 
 function getCategorie($id) {
-	$sql = "SELECT * FROM reading_challenge_categorie WHERE categorie_id=:id";
+	$sql = "SELECT * FROM categories WHERE id=:id";
 	try {
 		$db = getConnection();
-		$stmt = $db->prepare($sql);  
+		$stmt = $db->prepare($sql);
 		$stmt->bindParam("id", $id);
 		$stmt->execute();
-		$categorie = $stmt->fetchObject();  
+		$categorie = $stmt->fetchObject();
 		$db = null;
-		echo json_encode($categorie); 
+		echo json_encode($categorie);
 		exit;
 	} catch(PDOException $e) {
-		echo '{"error":{"text":'. $e->getMessage() .'}}'; 
+		echo '{"error":{"text":'. $e->getMessage() .'}}';
 	}
 }
 
 function addCategorie() {
 	$request = Slim::getInstance()->request();
 	$categorie = json_decode($request->getBody());
-	$sql = "INSERT INTO reading_challenge_categorie(categorie_label, categorie_label_fr, categorie_description, categorie_description_fr) VALUES (:label, :label_fr, :description, :description_fr)";
+	$sql = "INSERT INTO categories(libelle_en, libelle_fr, description_en, description_fr, image) VALUES (:libelle_en, :libelle_fr, :description_en, :description_fr, :image)";
 	try {
 		$db = getConnection();
-		$stmt = $db->prepare($sql);  
-		$stmt->bindParam("label", $categorie->label);
-		$stmt->bindParam("label_fr", $categorie->label_fr);
-		$stmt->bindParam("description", $categorie->description);
+		$stmt = $db->prepare($sql);
+		$stmt->bindParam("libelle_en", $categorie->libelle_en);
+		$stmt->bindParam("libelle_fr", $categorie->libelle_fr);
+		$stmt->bindParam("description_en", $categorie->description_en);
 		$stmt->bindParam("description_fr", $categorie->description_fr);
+		$stmt->bindParam("image", $categorie->image);
 		$stmt->execute();
 		$categorie->id = $db->lastInsertId();
 		$db = null;
 		echo json_encode($categorie);
 		exit;
 	} catch(PDOException $e) {
-		echo '{"error":{"text":'. $e->getMessage() .'}}'; 
+		echo '{"error":{"text":'. $e->getMessage() .'}}';
 	}
 }
 
@@ -81,13 +82,13 @@ function updateCategorie($id) {
 	$request = Slim::getInstance()->request();
 	$body = $request->getBody();
 	$categorie = json_decode($body);
-	$sql = "UPDATE reading_challenge_categorie SET categorie_label=:label, categorie_label_fr=:label_fr, categorie_description=:description, categorie_description_fr=:description_fr WHERE categorie_id=:id";
+	$sql = "UPDATE categories SET libelle_en=:libelle_en, libelle_fr=:libelle_fr, description_en=:description_en, description_fr=:description_fr WHERE id=:id";
 	try {
 		$db = getConnection();
-		$stmt = $db->prepare($sql);  
-		$stmt->bindParam("label", $categorie->label);
-		$stmt->bindParam("label_fr", $categorie->label_fr);
-		$stmt->bindParam("description", $categorie->description);
+		$stmt = $db->prepare($sql);
+		$stmt->bindParam("libelle_en", $categorie->libelle_en);
+		$stmt->bindParam("libelle_fr", $categorie->libelle_fr);
+		$stmt->bindParam("description_en", $categorie->description_en);
 		$stmt->bindParam("description_fr", $categorie->description_fr);
 		$stmt->bindParam("id", $id);
 		$stmt->execute();
@@ -95,30 +96,30 @@ function updateCategorie($id) {
 		echo json_encode($categorie);
 		exit;
 	} catch(PDOException $e) {
-		echo '{"error":{"text":'. $e->getMessage() .'}}'; 
+		echo '{"error":{"text":'. $e->getMessage() .'}}';
 	}
 }
 
 function deleteCategorie($id) {
-	$sql = "DELETE FROM reading_challenge_categorie WHERE categorie_id=:id";
+	$sql = "DELETE FROM categories WHERE id=:id";
 	try {
 		$db = getConnection();
-		$stmt = $db->prepare($sql);  
+		$stmt = $db->prepare($sql);
 		$stmt->bindParam("id", $id);
 		$stmt->execute();
 		$db = null;
 		exit;
 	} catch(PDOException $e) {
-		echo '{"error":{"text":'. $e->getMessage() .'}}'; 
+		echo '{"error":{"text":'. $e->getMessage() .'}}';
 	}
 }
 
 function findBylabel($query) {
-	$sql = "SELECT * FROM reading_challenge_categorie WHERE UPPER(categorie_label) LIKE :query OR UPPER(categorie_label_fr) LIKE :query ORDER BY categorie_label, categorie_label_fr";
+	$sql = "SELECT * FROM categories WHERE UPPER(libelle_en) LIKE :query OR UPPER(libelle_fr) LIKE :query ORDER BY libelle_en,libelle_fr";
 	try {
 		$db = getConnection();
 		$stmt = $db->prepare($sql);
-		$query = "%".$query."%";  
+		$query = "%".$query."%";
 		$stmt->bindParam("query", $query);
 		$stmt->execute();
 		$categories = $stmt->fetchAll(PDO::FETCH_OBJ);
@@ -126,7 +127,7 @@ function findBylabel($query) {
 		echo json_encode($categories);
 		exit;
 	} catch(PDOException $e) {
-		echo '{"error":{"text":'. $e->getMessage() .'}}'; 
+		echo '{"error":{"text":'. $e->getMessage() .'}}';
 	}
 }
 
@@ -138,53 +139,54 @@ function findBylabel($query) {
 /*********				suggestion							  *********/
 /**********************************************************************/
 function getSuggestionById($id) {
-	$sql = "SELECT * FROM reading_challenge_suggestion WHERE suggestion_id=:id";
+	$sql = "SELECT * FROM suggestions WHERE id=:id";
 	try {
 		$db = getConnection();
-		$stmt = $db->prepare($sql);  
+		$stmt = $db->prepare($sql);
 		$stmt->bindParam("id", $id);
 		$stmt->execute();
-		$suggestion = $stmt->fetchObject();  
+		$suggestion = $stmt->fetchObject();
 		$db = null;
-		echo json_encode($suggestion); 
+		echo json_encode($suggestion);
 		exit;
 	} catch(PDOException $e) {
-		echo '{"error":{"text":'. $e->getMessage() .'}}'; 
+		echo '{"error":{"text":'. $e->getMessage() .'}}';
 	}
 }
 
 function getSuggestionsByCategoryId($id) {
-	$sql = "SELECT * FROM reading_challenge_suggestion WHERE categorie_id=:id";
+	$sql = "SELECT * FROM suggestions WHERE categorie_id=:id";
 	try {
 		$db = getConnection();
-		$stmt = $db->prepare($sql);  
+		$stmt = $db->prepare($sql);
 		$stmt->bindParam("id", $id);
 		$stmt->execute();
 		$suggestions = $stmt->fetchAll(PDO::FETCH_OBJ);
 		$db = null;
-		echo json_encode($suggestions); 
+		echo json_encode($suggestions);
 		exit;
 	} catch(PDOException $e) {
-		echo '{"error":{"text":'. $e->getMessage() .'}}'; 
+		echo '{"error":{"text":'. $e->getMessage() .'}}';
 	}
 }
 
 function addSuggestion() {
 	$request = Slim::getInstance()->request();
 	$suggestion = json_decode($request->getBody());
-	$sql = "INSERT INTO reading_challenge_suggestion(suggestion_label, categorie_id) VALUES (:label, :id)";
+	$sql = "INSERT INTO suggestions(libelle_en, libelle_fr, categorie_id) VALUES (:libelle_en, libelle_fr, :id)";
 	try {
 		$db = getConnection();
-		$stmt = $db->prepare($sql);  
-		$stmt->bindParam("label", $suggestion->label);
-		$stmt->bindParam("id", $suggestion->id_category);
+		$stmt = $db->prepare($sql);
+		$stmt->bindParam("libelle_en", $suggestion->libelle_en);
+		$stmt->bindParam("libelle_fr", $suggestion->libelle_fr);
+		$stmt->bindParam("id", $suggestion->categorie_id);
 		$stmt->execute();
 		$suggestion->id = $db->lastInsertId();
 		$db = null;
 		echo json_encode($suggestion);
 		exit;
 	} catch(PDOException $e) {
-		echo '{"error":{"text":'. $e->getMessage() .'}}'; 
+		echo '{"error":{"text":'. $e->getMessage() .'}}';
 	}
 }
 
@@ -192,41 +194,42 @@ function updateSuggestion($id) {
 	$request = Slim::getInstance()->request();
 	$body = $request->getBody();
 	$suggestion = json_decode($body);
-	$sql = "UPDATE reading_challenge_suggestion SET suggestion_label=:label WHERE suggestion_id=:id";
+	$sql = "UPDATE suggestions SET libelle_en=:libelle_en and libelle_fr=:libelle_fr WHERE id=:id";
 	try {
 		$db = getConnection();
-		$stmt = $db->prepare($sql);  
-		$stmt->bindParam("label", $suggestion->label);
+		$stmt = $db->prepare($sql);
+		$stmt->bindParam("libelle_en", $suggestion->libelle_en);
+		$stmt->bindParam("libelle_fr", $suggestion->libelle_fr);
 		$stmt->bindParam("id", $id);
 		$stmt->execute();
 		$db = null;
 		echo json_encode($suggestion);
 		exit;
 	} catch(PDOException $e) {
-		echo '{"error":{"text":'. $e->getMessage() .'}}'; 
+		echo '{"error":{"text":'. $e->getMessage() .'}}';
 	}
 }
 
 function deleteSuggestion($id) {
-	$sql = "DELETE FROM reading_challenge_suggestion WHERE suggestion_id=:id";
+	$sql = "DELETE FROM suggestions WHERE id=:id";
 	try {
 		$db = getConnection();
-		$stmt = $db->prepare($sql);  
+		$stmt = $db->prepare($sql);
 		$stmt->bindParam("id", $id);
 		$stmt->execute();
 		$db = null;
 		exit;
 	} catch(PDOException $e) {
-		echo '{"error":{"text":'. $e->getMessage() .'}}'; 
+		echo '{"error":{"text":'. $e->getMessage() .'}}';
 	}
 }
 
 function findSuggestionBylabel($query) {
-	$sql = "SELECT * FROM reading_challenge_suggestion WHERE UPPER(suggestion_label) LIKE :query ORDER BY suggestion_label";
+	$sql = "SELECT * FROM suggestions WHERE UPPER(libelle_en) LIKE :query or UPPER(libelle_fr) LIKE :query ORDER BY libelle_en, libelle_fr";
 	try {
 		$db = getConnection();
 		$stmt = $db->prepare($sql);
-		$query = "%".$query."%";  
+		$query = "%".$query."%";
 		$stmt->bindParam("query", $query);
 		$stmt->execute();
 		$suggestions = $stmt->fetchAll(PDO::FETCH_OBJ);
@@ -234,7 +237,7 @@ function findSuggestionBylabel($query) {
 		echo json_encode($suggestions);
 		exit;
 	} catch(PDOException $e) {
-		echo '{"error":{"text":'. $e->getMessage() .'}}'; 
+		echo '{"error":{"text":'. $e->getMessage() .'}}';
 	}
 }
 ?>
