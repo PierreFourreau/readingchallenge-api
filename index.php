@@ -6,7 +6,7 @@ require 'db.php';
 $app = new Slim();
 
 //category
-$app->get('/categories', 'getCategories');
+$app->get('/categories/:level', 'getCategories');
 $app->get('/categories/:id',	'getCategorie');
 $app->get('/categories/search/:query', 'findBylabel');
 $app->post('/categories', 'addCategorie');
@@ -27,7 +27,7 @@ $app->run();
 /*********				category							  *********/
 /**********************************************************************/
 function getCategories() {
-	$sql = "select * FROM categories";
+	$sql = "select * FROM categories where niveau = :level";
 	try {
 		$db = getConnection();
 		$stmt = $db->query($sql);
