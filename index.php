@@ -42,14 +42,15 @@ function getCategories() {
 		$db = getConnection();
 		$stmt = $db->query($sql);
 		$categories = $stmt->fetchAll(PDO::FETCH_OBJ);
-		$db = null;
-		throw new PDOException("Error Processing qsqsqs");
-		
+		$db = null;		
 		echo json_encode($categories);
 		exit;
 	} catch(Exception $e) {
 		$app = \Slim\Slim::getInstance();
 		$app->log->error('getCategories-'.$e->getMessage());
+		echo json_encode($categories);
+		exit;
+	} catch(PDOException $e) {
 		echo '{"error":{"text":'. $e->getMessage() .'}}';
 	}
 }
