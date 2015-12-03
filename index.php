@@ -26,11 +26,13 @@ $app->run();
 /**********************************************************************/
 /*********				category							  *********/
 /**********************************************************************/
-function getCategories() {
-	$sql = "select * FROM categories where niveau = :level";
+function getCategories($level) {
+	$sql = "SELECT * FROM categories where niveau=:level";
 	try {
 		$db = getConnection();
-		$stmt = $db->query($sql);
+		$stmt = $db->prepare($sql);
+		$stmt->bindParam("level", $level);
+		$stmt->execute();
 		$categories = $stmt->fetchAll(PDO::FETCH_OBJ);
 		$db = null;
 		echo json_encode($categories);
