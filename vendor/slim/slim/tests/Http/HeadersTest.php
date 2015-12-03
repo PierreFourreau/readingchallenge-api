@@ -7,7 +7,6 @@
  * @link        http://www.slimframework.com
  * @license     http://www.slimframework.com/license
  * @version     2.6.1
- * @package     Slim
  *
  * MIT LICENSE
  *
@@ -30,18 +29,31 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-namespace Slim\Exception;
 
-/**
- * Stop Exception
- *
- * This Exception is thrown when the Slim application needs to abort
- * processing and return control flow to the outer PHP script.
- *
- * @package Slim
- * @author  Josh Lockhart
- * @since   1.0.0
- */
-class Stop extends \Exception
+class HeadersTest extends PHPUnit_Framework_TestCase
 {
+    public function testNormalizesKey()
+    {
+        $h = new \Slim\Http\Headers();
+        $h->set('Http_Content_Type', 'text/html');
+        $prop = new \ReflectionProperty($h, 'data');
+        $prop->setAccessible(true);
+        $this->assertArrayHasKey('Content-Type', $prop->getValue($h));
+    }
+
+    public function testExtractHeaders()
+    {
+        $test = array(
+            'HTTP_HOST' => 'foo.com',
+            'SERVER_NAME' => 'foo',
+            'CONTENT_TYPE' => 'text/html',
+            'X_FORWARDED_FOR' => '127.0.0.1'
+        );
+        $results = \Slim\Http\Headers::extract($test);
+        $this->assertEquals(array(
+            'HTTP_HOST' => 'foo.com',
+            'CONTENT_TYPE' => 'text/html',
+            'X_FORWARDED_FOR' => '127.0.0.1'
+        ), $results);
+    }
 }

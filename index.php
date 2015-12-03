@@ -1,12 +1,22 @@
 <?php
 
 require 'Slim/Slim.php';
+\Slim\Slim::registerAutoloader();
+require 'vendor/autoload.php';
 require 'db.php';
 
-$app = new Slim();
+$app = new \Slim\Slim(array(
+	//'log.writer' => $logWriter,
+	'log.writer' => new \Slim\Logger\DateTimeFileWriter(
+			array(
+				'path' => 'Logs/',
+			)
+		)
+	));
 
 //category
-$app->get('/categories/:level', 'getCategories');
+$app->get('/categories', 'getCategories');
+$app->get('/categoriesByLevel/:level', 'getCategoriesByLevel');
 $app->get('/categories/:id',	'getCategorie');
 $app->get('/categories/search/:query', 'findBylabel');
 $app->post('/categories', 'addCategorie');
@@ -26,7 +36,24 @@ $app->run();
 /**********************************************************************/
 /*********				category							  *********/
 /**********************************************************************/
-function getCategories($level) {
+function getCategories() {
+	$sql = "select * FROM categories";
+	try {
+		$db = getConnection();
+		$stmt = $db->query($sql);
+		$categories = $stmt->fetchAll(PDO::FETCH_OBJ);
+		$db = null;
+		throw new PDOException("Error Processing qsqsqs");
+		
+		echo json_encode($categories);
+		exit;
+	} catch(Exception $e) {
+		$app = \Slim\Slim::getInstance();
+		$app->log->error('getCategories-'.$e->getMessage());
+		echo '{"error":{"text":'. $e->getMessage() .'}}';
+	}
+}
+function getCategoriesByLevel($level) {
 	$sql = "SELECT * FROM categories where niveau=:level";
 	try {
 		$db = getConnection();
@@ -37,7 +64,9 @@ function getCategories($level) {
 		$db = null;
 		echo json_encode($categories);
 		exit;
-	} catch(PDOException $e) {
+	} catch(Exception $e) {
+		$app = \Slim\Slim::getInstance();
+		$app->log->error('getCategoriesByLevel-'.$e->getMessage());
 		echo '{"error":{"text":'. $e->getMessage() .'}}';
 	}
 }
@@ -53,7 +82,9 @@ function getCategorie($id) {
 		$db = null;
 		echo json_encode($categorie);
 		exit;
-	} catch(PDOException $e) {
+	} catch(Exception $e) {
+		$app = \Slim\Slim::getInstance();
+		$app->log->error('getCategorie-'.$e->getMessage());
 		echo '{"error":{"text":'. $e->getMessage() .'}}';
 	}
 }
@@ -75,7 +106,9 @@ function addCategorie() {
 		$db = null;
 		echo json_encode($categorie);
 		exit;
-	} catch(PDOException $e) {
+	} catch(Exception $e) {
+		$app = \Slim\Slim::getInstance();
+		$app->log->error('addCategorie-'.$e->getMessage());
 		echo '{"error":{"text":'. $e->getMessage() .'}}';
 	}
 }
@@ -97,7 +130,9 @@ function updateCategorie($id) {
 		$db = null;
 		echo json_encode($categorie);
 		exit;
-	} catch(PDOException $e) {
+	} catch(Exception $e) {
+		$app = \Slim\Slim::getInstance();
+		$app->log->error('updateCategorie-'.$e->getMessage());
 		echo '{"error":{"text":'. $e->getMessage() .'}}';
 	}
 }
@@ -111,7 +146,9 @@ function deleteCategorie($id) {
 		$stmt->execute();
 		$db = null;
 		exit;
-	} catch(PDOException $e) {
+	} catch(Exception $e) {
+		$app = \Slim\Slim::getInstance();
+		$app->log->error('deleteCategorie-'.$e->getMessage());
 		echo '{"error":{"text":'. $e->getMessage() .'}}';
 	}
 }
@@ -128,14 +165,12 @@ function findBylabel($query) {
 		$db = null;
 		echo json_encode($categories);
 		exit;
-	} catch(PDOException $e) {
+	} catch(Exception $e) {
+		$app = \Slim\Slim::getInstance();
+		$app->log->error('findBylabel-'.$e->getMessage());
 		echo '{"error":{"text":'. $e->getMessage() .'}}';
 	}
 }
-
-
-
-
 
 /**********************************************************************/
 /*********				suggestion							  *********/
@@ -151,7 +186,9 @@ function getSuggestionById($id) {
 		$db = null;
 		echo json_encode($suggestion);
 		exit;
-	} catch(PDOException $e) {
+	} catch(Exception $e) {
+		$app = \Slim\Slim::getInstance();
+		$app->log->error('getSuggestionById-'.$e->getMessage());
 		echo '{"error":{"text":'. $e->getMessage() .'}}';
 	}
 }
@@ -167,7 +204,9 @@ function getSuggestionsByCategoryId($id) {
 		$db = null;
 		echo json_encode($suggestions);
 		exit;
-	} catch(PDOException $e) {
+	} catch(Exception $e) {
+		$app = \Slim\Slim::getInstance();
+		$app->log->error('getSuggestionsByCategoryId-'.$e->getMessage());
 		echo '{"error":{"text":'. $e->getMessage() .'}}';
 	}
 }
@@ -187,7 +226,9 @@ function addSuggestion() {
 		$db = null;
 		echo json_encode($suggestion);
 		exit;
-	} catch(PDOException $e) {
+	} catch(Exception $e) {
+		$app = \Slim\Slim::getInstance();
+		$app->log->error('addSuggestion-'.$e->getMessage());
 		echo '{"error":{"text":'. $e->getMessage() .'}}';
 	}
 }
@@ -207,7 +248,9 @@ function updateSuggestion($id) {
 		$db = null;
 		echo json_encode($suggestion);
 		exit;
-	} catch(PDOException $e) {
+	} catch(Exception $e) {
+		$app = \Slim\Slim::getInstance();
+		$app->log->error('updateSuggestion-'.$e->getMessage());
 		echo '{"error":{"text":'. $e->getMessage() .'}}';
 	}
 }
@@ -221,7 +264,9 @@ function deleteSuggestion($id) {
 		$stmt->execute();
 		$db = null;
 		exit;
-	} catch(PDOException $e) {
+	} catch(Exception $e) {
+		$app = \Slim\Slim::getInstance();
+		$app->log->error('deleteSuggestion-'.$e->getMessage());
 		echo '{"error":{"text":'. $e->getMessage() .'}}';
 	}
 }
@@ -238,7 +283,9 @@ function findSuggestionBylabel($query) {
 		$db = null;
 		echo json_encode($suggestions);
 		exit;
-	} catch(PDOException $e) {
+	} catch(Exception $e) {
+		$app = \Slim\Slim::getInstance();
+		$app->log->error('findSuggestionBylabel-'.$e->getMessage());
 		echo '{"error":{"text":'. $e->getMessage() .'}}';
 	}
 }

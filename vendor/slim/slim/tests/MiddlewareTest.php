@@ -7,7 +7,6 @@
  * @link        http://www.slimframework.com
  * @license     http://www.slimframework.com/license
  * @version     2.6.1
- * @package     Slim
  *
  * MIT LICENSE
  *
@@ -30,18 +29,51 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-namespace Slim\Exception;
 
-/**
- * Stop Exception
- *
- * This Exception is thrown when the Slim application needs to abort
- * processing and return control flow to the outer PHP script.
- *
- * @package Slim
- * @author  Josh Lockhart
- * @since   1.0.0
- */
-class Stop extends \Exception
+class MyMiddleware extends \Slim\Middleware
 {
+    public function call() {}
+}
+
+class MiddlewareTest extends PHPUnit_Framework_TestCase
+{
+    public function testSetApplication()
+    {
+        $app = new stdClass();
+        $mw = new MyMiddleware();
+        $mw->setApplication($app);
+
+        $this->assertAttributeSame($app, 'app', $mw);
+    }
+
+    public function testGetApplication()
+    {
+        $app = new stdClass();
+        $mw = new MyMiddleware();
+        $property = new \ReflectionProperty($mw, 'app');
+        $property->setAccessible(true);
+        $property->setValue($mw, $app);
+
+        $this->assertSame($app, $mw->getApplication());
+    }
+
+    public function testSetNextMiddleware()
+    {
+        $mw1 = new MyMiddleware();
+        $mw2 = new MyMiddleware();
+        $mw1->setNextMiddleware($mw2);
+
+        $this->assertAttributeSame($mw2, 'next', $mw1);
+    }
+
+    public function testGetNextMiddleware()
+    {
+        $mw1 = new MyMiddleware();
+        $mw2 = new MyMiddleware();
+        $property = new \ReflectionProperty($mw1, 'next');
+        $property->setAccessible(true);
+        $property->setValue($mw1, $mw2);
+
+        $this->assertSame($mw2, $mw1->getNextMiddleware());
+    }
 }
