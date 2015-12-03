@@ -37,12 +37,12 @@ $app->run();
 /*********				category							  *********/
 /**********************************************************************/
 function getCategories() {
-	$sql = "select * FROM categories";
+	$sql = "select c.id, c.libelle_fr, c.libelle_en, c.description_fr, c.description_en, c.image FROM categories c";
 	try {
 		$db = getConnection();
 		$stmt = $db->query($sql);
 		$categories = $stmt->fetchAll(PDO::FETCH_OBJ);
-		$db = null;		
+		$db = null;
 		echo json_encode($categories);
 		exit;
 	} catch(Exception $e) {
@@ -55,7 +55,7 @@ function getCategories() {
 	}
 }
 function getCategoriesByLevel($level) {
-	$sql = "SELECT * FROM categories where niveau=:level";
+	$sql = "SELECT c.id, c.libelle_fr, c.libelle_en, c.description_fr, c.description_en, c.image FROM categories c where c.niveau=:level";
 	try {
 		$db = getConnection();
 		$stmt = $db->prepare($sql);
@@ -73,7 +73,7 @@ function getCategoriesByLevel($level) {
 }
 
 function getCategorie($id) {
-	$sql = "SELECT * FROM categories WHERE id=:id";
+	$sql = "SELECT c.id, c.libelle_fr, c.libelle_en, c.description_fr, c.description_en, c.image FROM categories c WHERE c.id=:id";
 	try {
 		$db = getConnection();
 		$stmt = $db->prepare($sql);
@@ -155,7 +155,7 @@ function deleteCategorie($id) {
 }
 
 function findBylabel($query) {
-	$sql = "SELECT * FROM categories WHERE UPPER(libelle_en) LIKE :query OR UPPER(libelle_fr) LIKE :query ORDER BY libelle_en,libelle_fr";
+	$sql = "SELECT c.id, c.libelle_fr, c.libelle_en, c.description_fr, c.description_en, c.image FROM c categories WHERE UPPER(c.libelle_en) LIKE :query OR UPPER(c.libelle_fr) LIKE :query ORDER BY c.libelle_en,c.libelle_fr";
 	try {
 		$db = getConnection();
 		$stmt = $db->prepare($sql);
@@ -177,7 +177,7 @@ function findBylabel($query) {
 /*********				suggestion							  *********/
 /**********************************************************************/
 function getSuggestionById($id) {
-	$sql = "SELECT * FROM suggestions WHERE id=:id";
+	$sql = "SELECT s.id, s.libelle_fr, s.libelle_en, s.categorie_id FROM suggestions s WHERE s.id=:id";
 	try {
 		$db = getConnection();
 		$stmt = $db->prepare($sql);
@@ -195,7 +195,7 @@ function getSuggestionById($id) {
 }
 
 function getSuggestionsByCategoryId($id) {
-	$sql = "SELECT * FROM suggestions WHERE categorie_id=:id";
+	$sql = "SELECT s.id, s.libelle_fr, s.libelle_en, s.categorie_id FROM suggestions s WHERE s.categorie_id=:id";
 	try {
 		$db = getConnection();
 		$stmt = $db->prepare($sql);
@@ -215,7 +215,7 @@ function getSuggestionsByCategoryId($id) {
 function addSuggestion() {
 	$request = Slim::getInstance()->request();
 	$suggestion = json_decode($request->getBody());
-	$sql = "INSERT INTO suggestions(libelle_en, libelle_fr, categorie_id) VALUES (:libelle_en, libelle_fr, :id)";
+	$sql = "INSERT INTO suggestions(libelle_en, libelle_fr, categorie_id) VALUES (:libelle_en, :libelle_fr, :id)";
 	try {
 		$db = getConnection();
 		$stmt = $db->prepare($sql);
@@ -273,7 +273,7 @@ function deleteSuggestion($id) {
 }
 
 function findSuggestionBylabel($query) {
-	$sql = "SELECT * FROM suggestions WHERE UPPER(libelle_en) LIKE :query or UPPER(libelle_fr) LIKE :query ORDER BY libelle_en, libelle_fr";
+	$sql = "SELECT s.id, s.libelle_fr, s.libelle_en, s.categorie_id FROM suggestions s WHERE UPPER(s.libelle_en) LIKE :query or UPPER(s.libelle_fr) LIKE :query ORDER BY s.libelle_en, s.libelle_fr";
 	try {
 		$db = getConnection();
 		$stmt = $db->prepare($sql);
