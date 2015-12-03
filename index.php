@@ -6,7 +6,8 @@ require 'db.php';
 $app = new Slim();
 
 //category
-$app->get('/categories/:level', 'getCategories');
+$app->get('/categories', 'getCategories');
+$app->get('/categoriesByLevel/:level', 'getCategoriesByLevel');
 $app->get('/categories/:id',	'getCategorie');
 $app->get('/categories/search/:query', 'findBylabel');
 $app->post('/categories', 'addCategorie');
@@ -26,7 +27,20 @@ $app->run();
 /**********************************************************************/
 /*********				category							  *********/
 /**********************************************************************/
-function getCategories($level) {
+function getCategories() {
+	$sql = "select * FROM categories";
+	try {
+		$db = getConnection();
+		$stmt = $db->query($sql);
+		$categories = $stmt->fetchAll(PDO::FETCH_OBJ);
+		$db = null;
+		echo json_encode($categories);
+		exit;
+	} catch(PDOException $e) {
+		echo '{"error":{"text":'. $e->getMessage() .'}}';
+	}
+}
+function getCategoriesByLevel($level) {
 	$sql = "SELECT * FROM categories where niveau=:level";
 	try {
 		$db = getConnection();
