@@ -315,6 +315,19 @@ function addProposition() {
 		$id = $db->lastInsertId();
 		$db = null;
 		echo json_encode($id);
+		//send email
+
+		$headers = "From: ReadingChallenge\r\n";
+		$headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
+		$email = 'readingchallenge.contact@gmail.com';
+		$subject = 'Readingchallenge - ajout proposition';
+		$message = '<html><body>';
+		$message .= 'Nouvelle proposition ajoutée<br/><br/>';
+		$message .= 'Libelle fr : ' . $params['libelle_fr'].'<br/>';
+		$message .= 'Libelle en : ' . $params['libelle_en'];
+		$message .= '<br/><br/><a href="http://http://pierrefourreau.fr/readingchallenge/readingchallenge-admin">Admin</a>';
+		$message .= '</body></html>';
+		mail($email, $subject, $message, $headers);
 		exit;
 	} catch(Exception $e) {
 		$app = \Slim\Slim::getInstance();
