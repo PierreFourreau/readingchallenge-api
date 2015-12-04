@@ -8,11 +8,11 @@ require 'db.php';
 $app = new \Slim\Slim(array(
 	//'log.writer' => $logWriter,
 	'log.writer' => new \Slim\Logger\DateTimeFileWriter(
-			array(
-				'path' => 'Logs/',
-			)
-		)
-	));
+	array(
+		'path' => 'Logs/',
+	)
+)
+));
 
 //category
 $app->get('/categories', 'getCategories');
@@ -30,6 +30,9 @@ $app->get('/suggestions/search/:query', 'findSuggestionBylabel');
 $app->post('/suggestions', 'addSuggestion');
 $app->put('/suggestions/:id', 'updateSuggestion');
 $app->delete('/suggestions/:id',	'deleteSuggestion');
+
+//proposition
+$app->post('/propositions', 'addProposition');
 
 $app->run();
 
@@ -213,7 +216,7 @@ function getSuggestionsByCategoryId($id) {
 }
 
 function addSuggestion() {
-	$request = Slim::getInstance()->request();
+	$request = \Slim\Slim::getInstance()->request();
 	$suggestion = json_decode($request->getBody());
 	$sql = "INSERT INTO suggestions(libelle_en, libelle_fr, categorie_id) VALUES (:libelle_en, :libelle_fr, :id)";
 	try {
@@ -290,4 +293,34 @@ function findSuggestionBylabel($query) {
 		echo '{"error":{"text":'. $e->getMessage() .'}}';
 	}
 }
+
+
+/**********************************************************************/
+/*********				propositions							  *********/
+/**********************************************************************/
+function addProposition() {
+	$request = \Slim\Slim::getInstance()->request();
+	$proposition = json_decode($request->getBody());
+	$sql = "INSERT INTO propositions(libelle_en, libelle_fr, categorie_id, created, modified) VALUES (:libelle_en, :libelle_fr, :id, :dateNow, :dateNow)";
+	parse_str($request->getBody(), $params);
+	$dateNow = date("Y-m-d H:i:s");
+	try {
+		$db = getConnection();
+		$stmt = $db->prepare($sql);
+		$stmt->bindParam("libelle_en", $params['libelle_en']);
+		$stmt->bindParam("libelle_fr", $params['libelle_fr']);
+		$stmt->bindParam("id", $params['categorie_id']);
+		$stmt->bindParam("dateNow", $dateNow);
+		$stmt->execute();
+		$id = $db->lastInsertId();
+		$db = null;
+		echo json_encode($id);
+		exit;
+	} catch(Exception $e) {
+		$app = \Slim\Slim::getInstance();
+		$app->log->error('addProposition-'.$e->getMessage());
+		echo '{"error":{"text":'. $e->getMessage() .'}}';
+	}
+}
+
 ?>
