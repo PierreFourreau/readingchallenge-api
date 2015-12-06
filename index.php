@@ -325,7 +325,7 @@ function addProposition() {
 		$message .= 'Nouvelle proposition ajoutée<br/><br/>';
 		$message .= 'Libelle fr : ' . $params['libelle_fr'].'<br/>';
 		$message .= 'Libelle en : ' . $params['libelle_en'];
-		$message .= '<br/><br/><a href="http://pierrefourreau.fr/readingchallenge/readingchallenge-admin">Admin</a>';
+		$message .= '<br/><br/><a href="http://pierrefourreau.fr/readingchallenge/readingchallenge-admin/propositions">Admin</a>';
 		$message .= '</body></html>';
 		mail($email, $subject, $message, $headers);
 		exit;
