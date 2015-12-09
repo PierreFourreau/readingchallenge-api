@@ -58,7 +58,7 @@ function getCategories() {
 	}
 }
 function getCategoriesByLevel($level) {
-	$sql = "SELECT c.id, c.libelle_fr, c.libelle_en, c.description_fr, c.description_en, c.image FROM categories c where c.niveau=:level";
+	$sql = "SELECT c.id, c.libelle_fr, c.libelle_en, c.description_fr, c.description_en, c.image FROM categories c where c.niveau<=:level";
 	try {
 		$db = getConnection();
 		$stmt = $db->prepare($sql);
