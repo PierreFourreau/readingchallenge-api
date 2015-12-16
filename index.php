@@ -198,7 +198,7 @@ function getSuggestionById($id) {
 }
 
 function getSuggestionsByCategoryId($id) {
-	$sql = "SELECT s.id, s.libelle_fr, s.libelle_en, s.categorie_id FROM suggestions s WHERE s.categorie_id=:id";
+	$sql = "SELECT s.id, s.libelle_fr, s.libelle_en, s.categorie_id FROM suggestions s WHERE s.categorie_id=:id order by s.libelle_fr, s.libelle_en";
 	try {
 		$db = getConnection();
 		$stmt = $db->prepare($sql);
