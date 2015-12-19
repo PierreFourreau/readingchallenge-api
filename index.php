@@ -301,7 +301,7 @@ function findSuggestionBylabel($query) {
 function addProposition() {
 	$request = \Slim\Slim::getInstance()->request();
 	$proposition = json_decode($request->getBody());
-	$sql = "INSERT INTO propositions(libelle_en, libelle_fr, categorie_id, created, modified) VALUES (:libelle_en, :libelle_fr, :id, :dateNow, :dateNow)";
+	$sql = "INSERT INTO propositions(libelle_en, libelle_fr, categorie_id, user_language, user_email, created, modified) VALUES (:libelle_en, :libelle_fr, :id, :user_language, :user_email, :dateNow, :dateNow)";
 	parse_str($request->getBody(), $params);
 	$dateNow = date("Y-m-d H:i:s");
 	try {
@@ -309,6 +309,8 @@ function addProposition() {
 		$stmt = $db->prepare($sql);
 		$stmt->bindParam("libelle_en", $params['libelle_en']);
 		$stmt->bindParam("libelle_fr", $params['libelle_fr']);
+		$stmt->bindParam("user_language", $params['user_language']);
+		$stmt->bindParam("user_email", $params['user_email']);
 		$stmt->bindParam("id", $params['categorie_id']);
 		$stmt->bindParam("dateNow", $dateNow);
 		$stmt->execute();
@@ -319,12 +321,14 @@ function addProposition() {
 
 		$headers = "From: ReadingChallenge\r\n";
 		$headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
-		$email = 'readingchallenge.contact@gmail.com';
+		$email = 'read.board.contact@gmail.com';
 		$subject = 'Readingchallenge - ajout proposition';
 		$message = '<html><body>';
 		$message .= 'Nouvelle proposition ajoutée<br/><br/>';
 		$message .= 'Libelle fr : ' . $params['libelle_fr'].'<br/>';
-		$message .= 'Libelle en : ' . $params['libelle_en'];
+		$message .= 'Libelle en : ' . $params['libelle_en'].'<br/>';
+		$message .= 'User email : ' . $params['user_email'].'<br/>';
+		$message .= 'User language : ' . $params['user_language'];
 		$message .= '<br/><br/><a href="http://pierrefourreau.fr/readingchallenge/readingchallenge-admin/propositions">Admin</a>';
 		$message .= '</body></html>';
 		mail($email, $subject, $message, $headers);
