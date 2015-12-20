@@ -180,7 +180,7 @@ function findBylabel($query) {
 /*********				suggestion							  *********/
 /**********************************************************************/
 function getSuggestionById($id) {
-	$sql = "SELECT s.id, s.libelle_fr, s.libelle_en, s.categorie_id FROM suggestions s WHERE s.id=:id";
+	$sql = "SELECT s.id, s.libelle_fr, s.libelle_en, s.url_fr, s.url_en, s.categorie_id FROM suggestions s WHERE s.id=:id";
 	try {
 		$db = getConnection();
 		$stmt = $db->prepare($sql);
@@ -198,7 +198,7 @@ function getSuggestionById($id) {
 }
 
 function getSuggestionsByCategoryId($id) {
-	$sql = "SELECT s.id, s.libelle_fr, s.libelle_en, s.categorie_id FROM suggestions s WHERE s.categorie_id=:id order by s.libelle_fr, s.libelle_en";
+	$sql = "SELECT s.id, s.libelle_fr, s.libelle_en, s.url_fr, s.url_en, s.categorie_id FROM suggestions s WHERE s.categorie_id=:id order by s.libelle_fr, s.libelle_en";
 	try {
 		$db = getConnection();
 		$stmt = $db->prepare($sql);
